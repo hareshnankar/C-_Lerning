@@ -32,22 +32,22 @@ datatype           can use on             perpose to use
 Example datatype size with Modifiers in C
 Examples include:
 
-datatype                            size                   range
+datatype                            size                     range
 
-1.char or signed char               1 byte                 -128 to 127
-2.unsigned char                     1 byte                  0 to 255
+1.char or signed char               1 byte                  -128 to 127
+2.unsigned char                     1 byte                   0 to 255
 
 3.short or singed short             2 byte                  -32768 to 32767
-3.unsigned short                    2 byte                  0 to 65535
+3.unsigned short                    2 byte                   0 to 65535
 
-3.short int or singed short int     2 byte                   -32768 to 32767
-3.unsigned short int                2 byte                    0 to 65535
+3.short int or singed short int     2 byte                  -32768 to 32767
+3.unsigned short int                2 byte                   0 to 65535
 
-3.long or singed long               4 byte                   -2147483648 to 2147483647  = -(65536*65536)/2 to (65536*65536)/2
-3.unsigned long                     4 byte                    0 to 4294967295           =  0 to (65536 * 65535)
+3.long or singed long               4 byte                  -2147483648 to 2147483647  = -(65536*65536)/2 to (65536*65536)/2
+3.unsigned long                     4 byte                   0 to 4294967295           =  0 to (65536 * 65535)
 
-3.long int or singed long int       8 byte                   -2147483648 to 2147483647  = -(65536*65536)/2 to (65536*65536)/2
-3.unsigned long int                 8 byte                    0 to 4294967295           =  0 to (65536 * 65535)
+3.long int or singed long int       8 byte                  -2147483648 to 2147483647  = -(65536*65536)/2 to (65536*65536)/2
+3.unsigned long int                 8 byte                   0 to 4294967295           =  0 to (65536 * 65535)
 
 3.float                             4 bytes                  1.175494e-38 to 3.402823e+38
 4.double                            8 bytes                  2.225074e-308 to 1.797693e+308
