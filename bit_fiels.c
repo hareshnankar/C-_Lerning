@@ -12,6 +12,7 @@
  * - The compiler may add padding to align the bit fields to byte or word boundaries.
  * - Bit fields cannot be initialized directly in the structure definition.
  * - Bit fields are typically used with integer types.
+ * - we cannot access bitfeilds by address
  * - Accessing bit fields can be slower than accessing regular integers due to bit masking and shifting operations.
  */
 
