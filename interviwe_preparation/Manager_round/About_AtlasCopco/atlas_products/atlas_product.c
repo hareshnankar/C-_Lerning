@@ -8,13 +8,26 @@
  */
 
 /* Products include:
- * - Air compressors
- * - Vacuum systems
- * - Generators
- * - Dewatering pumps
- * - Power tools
- * - Assembly systems
- */
+
+   Air compressors
+   Used in factories, garages, and construction sites to power pneumatic tools and machinery.
+
+   Vacuum systems
+   Applied in packaging, electronics, pharmaceuticals, and cleanroom environments for suction or air removal.
+
+   Generators
+   Provide backup or primary power to industries, remote locations, and construction projects.
+
+   Dewatering pumps
+   Used to remove water from mines, trenches, tunnels, and flood-affected areas.
+
+   Power tools
+   A power tool is a mechanical device operated by an external power source like electricity, compressed air, or gasoline to perform tasks efficiently.
+   Employed in mining, infrastructure, and maintenance for drilling, breaking, and fastening tasks.
+
+   Assembly systems
+   Integrated into automotive and electronics factories for precise, automated fastening and torque control.
+*/
 
 /* They're part of the global Atlas Copco Group, but have a strong local 
  * presence across India.
@@ -58,5 +71,3 @@
  * These centers support Atlas Copco’s global innovation efforts and help Indian industries
  * adopt modern, efficient, and sustainable manufacturing practices.
  */
-
-
