@@ -152,6 +152,26 @@
  *     - A stuck slave holding SDA LOW prevents further communication.
  *     - Solution: Toggle SCL manually to release the bus, then reinitialize I2C.
  * 
+/*
+ * ===========================================================================
+ * I2C VS. SPI PROTOCOL COMPARISON (ARCHITECTURAL DIFFERENCES)
+ * ===========================================================================
+ *
+ * | Feature          | I2C Protocol                 | SPI Protocol          |
+ * |------------------|------------------------------|-----------------------|
+ * | Communication    | Half-Duplex                  | Full-Duplex           |
+ * | Flow Control     | Supported (Clock Stretching) | Not Standard          |
+ * | Device Selection | Software Addressing          | Hardware Selection    |
+ * | Verification     | ACK/NACK after every byte    | No Inherent Check     |
+ * | Bus Topology     | Multi-master Capable         | Single-master Only    |
+ * | Drive Type       | Open-drain (needs pull-ups)  | Push-pull             |
+ *
+ * ---------------------------------------------------------------------------
+ * Note: This comparison excludes physical pin counts and maximum clock speeds.
+ * For 2025 high-reliability embedded designs, choose I2C for complex bus 
+ * networks and SPI for high-throughput sensor/memory data streams.
+ * ===========================================================================
+ */
  * code 
  * #include <stdint.h>
 include <stdbool.h>
