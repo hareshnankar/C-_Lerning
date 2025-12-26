@@ -1,5 +1,6 @@
 /*
- * Serial Peripheral Interface (SPI) - Detailed Explanation
+ * Serial Peripheral Interface (SPI) - Detailed Explanation (Single master in standerd way but can be 
+ * multimaster using software and hardware 1master at time)
  *
  * Definition:
  * SPI is a synchronous serial communication protocol used for high-speed data exchange
@@ -20,13 +21,32 @@
  * 3. Master sends data on MOSI while slave responds via MISO.
  * 4. Master deactivates SS (HIGH) to end communication.
  *
- * SPI Modes (Clock Polarity & Phase):
- * | Mode | CPOL | CPHA | Clock Behavior               |
- * |------|------|------|------------------------------|
- * |  0   |  0 (Clock starts LOW when ideal )   |  0(first transaction of signal(voltage level))    | reciver (recive data) on rising edge and transmitter update(send) on falling edge |
- * |  1   |  0 (Clock starts LOW when ideal )   |  1(second transaction of signal(voltage level))   | reciver (recive data) on falling edge and transmitter update(send) on rising edge  |
- * |  2   |  1 (Clock starts HIGH when ideal)   |  0(first transaction of signal(voltage level))    | reciver (recive data) on falling edge and transmitter update(send) on rising edge  |
- * |  3   |  1 (Clock starts HIGH when ideal)   |  1(second transaction of signal(voltage level))   | reciver (recive data) on rising edge and transmitter update(send) on falling edge |
+ * =================================================================================
+ * SPI MODES: THE SIMPLE MEMORY RULE
+ * =================================================================================
+ *
+ * RULE 1 (CPOL): "Where does the clock start?"
+ * - CPOL 0: Starts LOW (Idle is 0)
+ * - CPOL 1: Starts HIGH (Idle is 1)
+ *
+ * RULE 2 (CPHA): "Which edge do I Read (Sample) on?"
+ * - CPHA 0: Read on the FIRST transition (the first move from idle)
+ * - CPHA 1: Read on the SECOND transition (the return move)
+ *
+ * ---------------------------------------------------------------------------------
+ * | MODE | CPOL | CPHA | IDLE LEVEL | SAMPLE (READ) EDGE | SHIFT (WRITE) EDGE |
+ * |------|------|------|------------|--------------------|--------------------|
+ * |  0   |  0   |  0   |   LOW      |   Rising (1st)     |   Falling (2nd)    |
+ * |  1   |  0   |  1   |   LOW      |   Falling (2nd)    |   Rising (1st)     |
+ * |  2   |  1   |  0   |   HIGH     |   Falling (1st)    |   Rising (2nd)     |
+ * |  3   |  1   |  1   |   HIGH     |   Rising (2nd)     |   Falling (1st)    |
+ * ---------------------------------------------------------------------------------
+ *
+ * MEMORY TRICK:
+ * - If CPOL == CPHA (Mode 0 & 3): You always sample on a RISING edge.
+ * - If CPOL != CPHA (Mode 1 & 2): You always sample on a FALLING edge.
+ * =================================================================================
+ */
  *
  * SPI Speed Calculation
  *
@@ -61,7 +81,26 @@
  * - **Peripheral Constraints**: Devices like EEPROMs and sensors have speed limits.
  * - **Bus Length & Noise**: Longer cables and signal interference can degrade speed.
  * - **Clock Configuration**: The SPI clock (SCLK) directly defines data transfer rate.
+
+/*
+ * ===========================================================================
+ * I2C VS. SPI PROTOCOL COMPARISON (ARCHITECTURAL DIFFERENCES)
+ * ===========================================================================
  *
+ * | Feature          | I2C Protocol                 | SPI Protocol          |
+ * |------------------|------------------------------|-----------------------|
+ * | Communication    | Half-Duplex                  | Full-Duplex           |
+ * | Flow Control     | Supported (Clock Stretching) | Not Standard          |
+ * | Device Selection | Software Addressing          | Hardware Selection    |
+ * | Verification     | ACK/NACK after every byte    | No Inherent Check     |
+ * | Bus Topology     | Multi-master Capable         | Single-master Only    |
+ * | Drive Type       | Open-drain (needs pull-ups)  | Push-pull             |
+ *
+ * ---------------------------------------------------------------------------
+ * Note: This comparison excludes physical pin counts and maximum clock speeds.
+ * For 2025 high-reliability embedded designs, choose I2C for complex bus 
+ * networks and SPI for high-throughput sensor/memory data streams.
+ * ===========================================================================
  * Summary:
  * - SPI speed varies based on hardware capabilities and signal integrity.
  * - Higher speeds enable faster communication but may require optimized wiring.
