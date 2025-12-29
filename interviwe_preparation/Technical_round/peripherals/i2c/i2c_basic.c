@@ -73,7 +73,7 @@
  * Resolution:
  * - Master A wins arbitration and continues its transmission.
  * - Master B stops transmitting and waits for the bus to become free.
-...........................................................................................................
+...................................................................................................
 /*
  * Clock Stretching in I2C: Definition and Explanation
  *
@@ -100,7 +100,7 @@
  * Implementation Considerations:
  * - Ensure master devices support clock stretching before enabling it in firmware.
  * - Use bus timeout mechanisms to prevent infinite wait conditions.
-....................................................................................................................
+................................................................................................
 /*
  * Maximum Number of Masters and Slaves in I2C
  *
@@ -118,7 +118,7 @@
  * - Multiple masters require proper arbitration handling to avoid conflicts.
  * - High slave count may lead to increased bus capacitance, slowing communication.
  * - Pull-up resistor values must be carefully selected for signal integrity.
- .......................................................................................................................
+ ........................................................................................................
 
  * Senior-Level I2C Interview Questions and Answers
  *
