@@ -64,13 +64,18 @@
  * /*
  * Pulse Width Modulation (PWM) - Important Parameters
  *
- * Parameter      | Definition                                                  | Impact
- * -----------------------------------------------------------------------------------------------------------------------------------------
- * Duty Cycle    | Percentage of time the signal is HIGH in one cycle.          | Controls the average voltage and power delivered to the load.
- * Frequency     | Number of PWM cycles per second (Hz).                        | Determines how fast the signal switches, affecting response time and smoothness.
- * Resolution    | Number of discrete duty cycle levels available.              | Higher resolution allows finer control over output power.
- * Amplitude     | Maximum voltage level of the PWM signal.                     | Defines the peak voltage applied to the load.
- * Period       | Time taken for one complete cycle (inverse of frequency).     | Affects how often the signal repeats.
+ * Parameter      | Definition                                                
+ * --------------------------------------------------------------------------------------------------
+ * Duty Cycle    | Percentage of time the signal is HIGH in one cycle.         
+                 |impact: Controls the average voltage and power delivered to the load.
+ * Frequency     | Number of PWM cycles per second (Hz).                        
+                 |impact : Determines how fast the signal switches, affecting response time and smoothness.
+ * Resolution    | Number of discrete duty cycle levels available.              
+                 |impact: Higher resolution allows finer control over output power.
+ * Amplitude     | Maximum voltage level of the PWM signal.                    
+                 |impact: Defines the peak voltage applied to the load.
+ * Period        | Time taken for one complete cycle (inverse of frequency).     
+                 |impact: Affects how often the signal repeats.
  *
  * Summary:
  * - Duty Cycle controls power delivery.
@@ -117,4 +122,36 @@
  * Summary:
  * PWM is a versatile technique widely used in embedded systems and power electronics.
  * Proper implementation ensures efficient and precise control of electrical devices.
- */
+ *
+ * important parameter and example of pwm but before that we need to understand few terms
+ * 1. What is a Prescaler? 
+ *    A prescaler is a hardware frequency divider that slows down the incoming system clock 
+ *    before it reaches the timer.
+       
+ * 2.Why use it? 
+ *    If the system clock is too fast, the timer (often only 16-bit
+ *    max 65,535 counts) will overflow too quickly to achieve low frequencies.
+    
+ * 3.How it works: A prescaler of (N) means the timer only increments once for every (N) system clock cycles.
+ *
+ *  Step A: Calculate the Prescaler (PSC) To avoid overflow and maintain high resolution,
+ * we choose a prescaler that allows the 
+ * period to fit into the register. For a 10 MHz clock, a prescaler of 10 is ideal. 
+ * Timer Clock = 10MHz/10 (or 1,000,000 ticks per second).
+ * Register Setting: PSC = 9 (Hardware often adds +1 automatically, so 9 results in a division by 10)
+ 
+ * Step B: Set the Period / Auto-Reload Register (ARR) 
+ * This register defines the total length of one PWM cycle. 
+ * Total Counts = Timer ClocK \ Desired Frequency = 1,000,000 Hz \ 1,000 Hz = 1,000 counts 
+ * Register Setting: ARR = 999 (The counter resets after counting from 0 to 999, 
+ * making 1,000 total steps)
+
+ * Step C: Set the Duty Cycle / Compare Register (CCR)
+ * This register determines how long the signal stays "High" during that period. 
+ * Pulse Width = Total Counts * Duty Cycle}=1,000 * 0.25=250 counts
+ * Register Setting: CCR = 250 
+
+ * 3. Summary of Register Logic
+ * Prescaler Register: Sets the "speed" of the timer (Clock ÷ PSC).
+ * Period (ARR) Register: Sets the "frequency" (Timer Speed ÷ ARR).
+ * Compare (CCR) Register: Sets the "duty cycle" (Pulse Width ÷ ARR).
