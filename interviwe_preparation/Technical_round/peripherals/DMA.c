@@ -1,0 +1,46 @@
+/* In an interview, Direct Memory Access (DMA) should be explained as a specialized hardware 
+unit that allows peripherals to transfer data directly to or from the system memory without 
+involving the CPU for every byte.
+
+1. Key Details of DMA
+Purpose: It offloads "mundane" data movement tasks from the CPU. This reduces CPU overhead, 
+lowers power consumption, and improves real-time responsiveness by allowing the processor to
+handle complex logic while data transfers happen in the background.
+
+Standard Modes of Transfer:
+Burst Mode: The DMA controller takes full control of the system bus and transfers an 
+entire block of data in one go.
+Cycle Stealing Mode: The DMA "steals" occasional bus cycles from the CPU to transfer 
+small chunks (e.g., one byte), allowing the CPU to continue working in between.
+Transparent/Interleaved Mode: Data is transferred only when the CPU is idle and not using the bus.
+Common Applications: High-speed data handling for ADCs (sensors), UART/SPI communication, and audio/video streaming.
+
+2. How to Implement DMA (Step-by-Step)
+Implementing DMA requires a "handshake" between the CPU and the DMA controller. 
+Step A: CPU Configuration (Initialization)
+The CPU must first program the DMA controller's internal registers: 
+Source Address: The memory or peripheral register where data starts (e.g., UART Data Register).
+Destination Address: Where the data should be moved (e.g., a RAM buffer).
+Transfer Count: The total number of bytes or words to move.
+Control Settings: Defining direction (Peripheral-to-Memory, Memory-to-Memory, etc.), data width (8-bit or 16-bit), 
+and priority.
+Increment Mode: Deciding if the source or destination address should automatically increment 
+after each byte (e.g., incrementing the RAM address but keeping the UART register address fixed)
+
+Step B: The Handshake Process
+Once enabled, the hardware takes over:
+DMA Request (DREQ): A peripheral (like a full UART buffer) sends a signal to the DMA controller indicating it is ready.
+Bus Request (HOLD): The DMA controller asks the CPU for control over the data and address buses.
+Bus Grant (HLDA): The CPU finishes its current cycle and grants control to the DMA controller.
+Data Transfer: The DMA controller moves data directly between source and destination.
+
+Step C: Completion
+Interrupt: Once the specified transfer count reaches zero, the DMA controller generates an 
+Interrupt to notify the CPU that the task is finished.
+Bus Release: The DMA controller releases the system bus back to the CPU
+
+3. Interview Tip: Real-World Example (STM32 UART DMA)
+If asked for a specific implementation example, describe a circular buffer for UART:
+"In an STM32 environment, I would set the DMA to Circular Mode. This allows the DMA to automatically wrap 
+around to the start of the buffer once it is full, enabling continuous data reception without manual CPU restarts. 
+I would then use the Half-Transfer and Transfer-Complete interrupts to process data in chunks without missing any incoming bytes.*/
