@@ -181,9 +181,92 @@ Sigle bit  = 8 to 25 TQs;
 specific number of TQs (e.g., 4 TQ for Prop_Seg, 5 TQ for Phase_Seg1).
 
 FRAM FORMATE 
+1.SOF (Start of Frame): 1 dominant bit to synchronize all nodes.
+2.Arbitration Field
+  ->Identifier: 11 bits (Standard) 
+  ->RTR (Remote Transmission Request): 
+  Dominant for data, recessive for requesting data
+3.Control Field:
+  ->Contains the IDE bit
+  ->1 reserved bit 
+  ->DLC (Data Length Code)
+4.Data Field: 0 to 8 bytes of data.
+5.CRC Field: 15-bit cyclic redundancy check for error detection.
+ ->0 to 14 CRC 
+ ->CRC delimeter -> 1 
+6.ACK Field:  
+ -> ack ->0
+ -> ack delimiter-> 1
+7.EOF (End of Frame): 7 recessive (1) bits marking the frame's conclusion
+8.IFS (INTER FRAM SPACE 3 BITS -> 1)
 
+Arbitration:
+nodes transmit their identifiers 
+bit by bit(MSB TO LSB). NODE 1 -> 0001 AND NODE 2 -> 0011 -> WINNER NODE1
+If a node transmitting a "1" detects a "0" from another node, it stops transmitting, 
+recognizing that the other node has a higher priority. This process ensures that 
+the message with the highest priority (the lowest ID) successfully gets through 
+without collisions or data los
 
+->massege validation 
+If any node on the bus detects an error during these checks, 
+it "destroys" the message by sending an Error Frame, forcing the transmitter to try again
 
+The five primary validation checks are:
+1.CRC Check: The receiver calculates its own checksum 
+from the data and compares it to the CRC Field sent by the transmitter.
+2.Bit Stuffing Check: If the receiver sees more than 5 consecutive bits of the same level 
+(000000 or 111111),it flags a "stuffing error," as the 6th bit must always 
+be an opposite "stuff" bit for synchronization
+3.Form Check: The receiver ensures "fixed-form" fields—like the CRC Delimiter, ACK Delimiter,
+and EOF—are correctly sent as Recessive (1) bits
+4.ACK Check: The transmitter sends a Recessive bit in the ACK Slot; if it doesn't "hear" a 
+Dominant bit back from at least one receiver, it declares the message invalid
+5.Bit Monitoring: The transmitter "listens" to every bit it sends. If it sends a 1 but sees 
+a 0 (outside of the arbitration or ACK phases), it signals a bit error.
 
+->Fault Confinement
+Every node maintains two internal counters: the Transmit Error Counter (TEC) and 
+the Receive Error Counter (REC). Based on these values, a node exists in one of three states:
+1. Error Active (Healthy)
+Condition: Both TEC and REC are less than 128.
+Behavior: The node participates fully. If it detects an error, 
+it sends a Dominant Error Flag (6 dominant bits) : means to stop all bus traffic 
+and force a retransmission
+2. Error Passive (Suspect)
+Condition: Either TEC or REC exceeds 127.
+Behavior: The node is "put on probation." When it detects an error, 
+it can only send a Recessive Error Flag. means it will not send data only 
+error will get send stilllistern everything Additionally, it must wait for 
+an extra "Suspend Transmission" time before sending its next message
+3.Bus Off (The "Banned" Stage):
+If the device keeps failing (counter over 255), it is considered totally broken. 
+The system "kicks it off" the bus entirely. It is forced to stay silent and stop 
+talking so the rest of the network can keep working smoothly without interference.
+
+->1. Message Filtering (Acceptance Filtering)
+Message filtering happens in the hardware of the CAN controller. This allows the 
+controller to automatically discard irrelevant messages without waking up the main CPU
+Filter Masks & IDs: You configure "Acceptance Masks" and "Acceptance Filters."
+->Filter ID: The specific ID you are looking for (e.g., 0x123).
+->Filter Mask: Tells the hardware which bits of the ID to ignore. 
+  For example, a mask could tell the controller to "only look at the first 3 bits" of an ID
+Benefits: This ensures that if a car has 100 different messages flying across the bus, 
+the Engine Control Unit (ECU) only "sees" the 5 messages it actually needs to operate, 
+improving 2025 system efficiency. [1, 2]
+
+->2. Message and Status Handling
+Message Buffering:
+Transmit Mailboxes: Your software places a message in a "mailbox." 
+The Object Layer then handles the timing and arbitration to send it out.
+
+Receive FIFOs: Incoming messages that pass the filter are stored in a First-In-First-Out 
+(FIFO) buffer until the CPU is ready to read them.
+
+Status Reporting:
+Transmission Status: The layer notifies the software if a message was "Sent Successfully,"
+"Failed due to Arbitration loss," or "Failed due to Error."
+Error Tracking: It reports the current status of the Fault Confinement counters (TEC and REC) 
+so the software knows if the node is in Error Active, Error Passive, or Bus Off state. [3, 4]
 
 */
