@@ -86,34 +86,41 @@ The Advantage: It is highly efficient because it doesn't require the signal
 to "return to zero" between every bit
 
 The Problem: Because the signal doesn't change for long strings of 0s or 1s, 
-there are no "edges" (voltage transitions). Receivers rely on these edges to synchronize 
-their internal clocks with the transmitter. Without edges, the receiver's clock might "drift,"
-leading it to miscount bits or lose the frame entirely(synchromisation is done using voltage 
-level changes )
+there are no "edges" (voltage transitions). Receivers rely on these edges to 
+synchronize their internal clocks with the transmitter. Without edges, 
+the receiver's clock might "drift,"leading it to miscount bits or lose 
+the frame entirely(synchromisation is done using voltage level changes )
 
 2. Bit Stuffing: The Solution
 To fix the lack of transitions in NRZ, CAN uses bit stuffing. 
 This process ensures that the signal "toggles" often enough for receivers to stay in sync
 
-The Rule: Whenever the transmitter detects five consecutive bits of the same polarity 
-(five 0s or five 1s) in the data stream, it automatically inserts a sixth bit of the opposite polarity
+The Rule: Whenever the transmitter detects five consecutive bits of the same 
+polarity (five 0s or five 1s) in the data stream, it automatically inserts
+a sixth bit of the opposite polarity
 
 Example:
 Original Data: 1 1 1 1 1
 Stuffed Stream: 1 1 1 1 1 0 (the 0 is the "stuff bit")
 
-Syncing on the Edge: This extra bit creates a forced voltage transition (a rising or falling edge). 
-Every receiver on the bus sees this transition and resets its internal clock, ensuring it stays 
-perfectly aligned with the transmitter.
+Syncing on the Edge: This extra bit creates a forced voltage transition (a rising or 
+falling edge). Every receiver on the bus sees this transition and resets its
+internal clock, ensuring it stays perfectly aligned with the transmitter.
 
 3. Key Details
-De-stuffing: The receiving node’s CAN controller automatically identifies and removes these extra bits 
-after every five identical bits. The user software only sees the original, correct data
+De-stuffing: The receiving node’s CAN controller automatically identifies 
+and removes these extra bits after every five identical bits. The user 
+software only sees the original, correct data
 
-Where it applies: Bit stuffing is used in the Arbitration, Control, Data, and CRC fields. 
-It is not used in fixed-format parts like the CRC Delimiter, ACK Slot, or End of Frame (EOF), 
-which rely on specific fixed patterns
+Where it applies: Bit stuffing is used in the Arbitration, Control, Data,
+and CRC fields. It is not used in fixed-format parts like the CRC Delimiter,
+ACK Slot, or End of Frame (EOF), which rely on specific fixed patterns
 
-Stuff Errors: If a node detects six consecutive bits of the same polarity where stuffing should have occurred, 
-it flags a "Stuff Error," sends an Error Frame, and the message must be retransmitted.
+Stuff Errors: If a node detects six consecutive bits of the same polarity
+where stuffing should have occurred, it flags a "Stuff Error," 
+sends an Error Frame, and the message must be retransmitted.
+
+Jitter: A side effect of bit stuffing is that message length 
+can vary slightly based on the data content,which can introduce "jitter" 
+(small timing variations) in real-time systems.
 */
