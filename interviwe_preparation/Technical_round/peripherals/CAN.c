@@ -123,4 +123,67 @@ sends an Error Frame, and the message must be retransmitted.
 Jitter: A side effect of bit stuffing is that message length 
 can vary slightly based on the data content,which can introduce "jitter" 
 (small timing variations) in real-time systems.
+
+2. Transmission Medium
+The medium consists of the wiring, connectors, and termination required 
+to maintain signal integrity over distance
+
+Twisted-Pair Cable: The standard requires a twisted-pair cable 
+(shielded or unshielded) with a nominal characteristic impedance of 120 ohm. 
+Twisting the wires ensures that external noise affects both lines equally, 
+allowing the differential receiver to cancel the interference
+
+Termination Resistors:
+Value: Exactly two 120 ohm resistors must be placed at 
+the extreme ends of the main bus line
+Purpose: These match the cable's characteristic impedance to prevent 
+signal reflections (echoes) that could distort data and cause errors.
+
+Verification: When the network is powered off, the resistance measured 
+between CAN_H and CAN_L should be approximately 60 ohm (two 120 ohm) resistors in parallel)
+
+Topology: High-speed CAN typically uses a linear bus topology. 
+To minimize reflections, "stubs" (branches from the main bus to individual nodes) 
+should be kept as short as possible, typically \(\le \) 0.3 meters at 1 Mbps.
+
+CAN Frame Transfer Layer :
+Transfer rate and Timing 
+
+transfer rate :
+Classical CAN (CAN 2.0): Supports bit rates up to 1 Mbps. 
+Common speeds include 
+125 kbps, 250 kbps, and 500 kbps (standard for most automotive networks)
+
+CAN FD (Flexible Data-Rate):arbitration phase remains at 1 Mbps,
+the data phase can reach up to 5–8 Mbps
+
+CAN XL: The newest generation supports data rates up to 20 Mbps
+
+Distance Trade-off: Higher bit rates require shorter bus lengths. 
+For example, 1 Mbps is limited to roughly 40 meters, 
+while 125 kbps can operate over 500 meters
+
+Important term Time Quantum :
+the Time Quantum (TQ) remains the fundamental, 
+non-divisible unit of time that defines the resolution of a single CAN bit. 
+It serves as the "clock tick" for the CAN controller to build and manage the
+bit timing segments
+
+Definition and Calculation:
+TQ is derived from the peripheral clock of the microcontroller (MCU) by applying a Baud Rate Prescaler (BRP). 
+The prescaler slows down the high-frequency system clock to a manageable speed for the CAN protocol.
+
+The standard formula is:
+TQ = BRP / System clock freq = 4 / 40 MHz = 100ns
+Sigle bit  = 8 to 25 TQs;
+1.Sync_Seg: Always exactly 1 TQ.
+2.Prop_Seg, Phase_Seg1, and Phase_Seg2: These are programmable and consist of a 
+specific number of TQs (e.g., 4 TQ for Prop_Seg, 5 TQ for Phase_Seg1).
+
+FRAM FORMATE 
+
+
+
+
+
 */
