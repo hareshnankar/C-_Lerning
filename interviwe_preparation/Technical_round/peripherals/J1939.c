@@ -98,4 +98,41 @@ Raw Value (Hex)      Description         Meaning
 0xFE (254)           Error                Sensor failure or data is unreliable (e.g., short circuit).
 0xFF (255)           Not Available       The node does not support this parameter or the sensor is not installed
 
+
+for every parameter there are diff bytes assigned?
+Yes, every parameter (SPN) is assigned to specific bytes—and often specific bits—within a message (PGN). 
+These assignments are fixed by the SAE J1939 standard to ensure that different manufacturers' 
+equipment can "talk" to each other.
+
+Here is how the data is organized
+1. Fixed Byte Offsets
+In most J1939 messages, each parameter has a reserved home in the 8-byte data field
+->Unique Assignment: For a specific PGN, Byte 1 might always be "Temperature," while Bytes 4-5 are "Speed."
+->No Overlap: In standard messages, parameters do not overlap. If SPN A uses Byte 2, SPN B will start 
+  at Byte 3 or later
+
+2. Bit-Level Packaging
+Not all parameters need a full byte. Small data points (like "On/Off" switches 
+or "Low/High" states) are packed into bits to save space
+->Example: A single byte can hold four different 2-bit parameters.
+->Control Bits: Many J1939 parameters are only 2 bits long, allowing 
+  one byte to carry multiple status signals.
+
+3. Multiplexing (Same Bytes, Different Data)
+In rare cases, the same bytes can carry different parameters depending 
+on a "Multiplexer" byte (usually Byte 1).
+If Byte 1 = 0, then Bytes 2-8 contain one set of data.
+If Byte 1 = 1, then Bytes 2-8 contain a completely different set of data.
+This is common in complex messages like VIN (Vehicle Identification Number) or long diagnostic lists
+
+
+
+
+
+
+
+
+
+
+
 */
