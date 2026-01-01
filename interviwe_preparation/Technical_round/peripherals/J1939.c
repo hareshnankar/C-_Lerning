@@ -264,8 +264,6 @@ identifier and the 8-byte payload into their specific functional components
 
 1. The Raw Data Frame
 
-
-
 EXAMPLE 1 : 
 Imagine your CAN logger captures the following message:
 ID: 0CF00401 DLC: 8 DATA: F1 FF AA D0 1D FF FF FF (PDU2 EXAPLE)
@@ -386,7 +384,6 @@ Raw Hex    Parameter Name         Description
 04 F0 00   Requested PGN          Stored as LSB first (Intel Byte Order)
                                   Reconstructed Hex: 0x00F004
                                   Decimal: PGN 61444 (EEC1)
-
 Summary:
 ECU 01 is sending a specific Request (PDU1) to the Engine (ECU 00) 
 asking it to broadcast PGN 61444 (Engine Speed/Torque).
