@@ -1,3 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>adc.c — A4 printable (larger font)</title>
+<style>
+  html,body { height:100%; margin:0; padding:0; background:#fff; color:#000; }
+  /* A4 print area and margins */
+  @page { size: A4; margin: 15mm; }
+  body { padding: 0; margin: 0; }
+
+  /* The content area equals printable width: 210mm - 2*15mm = 180mm */
+  .sheet {
+    box-sizing: border-box;
+    width: 180mm;               /* printable content width */
+    min-height: 297mm;
+    padding: 0;
+    margin: 0 auto;
+    background: white;
+  }
+
+  /* Title and source (non-file content) */
+  .title { font-family: sans-serif; font-size: 16pt; margin: 6mm 0 4mm 0; }
+  .sourceurl { font-family: sans-serif; font-size: 9pt; color:#444; margin-bottom:6mm; }
+
+  /* Larger, readable monospace font for multiple pages */
+  pre {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14pt;           /* BIGGER font as requested */
+    line-height: 1.28;
+    white-space: pre;          /* preserve spaces and line breaks exactly */
+    overflow-wrap: anywhere;   /* allow breaking long sequences to fit the printable width */
+    word-break: break-all;     /* ensures long repeated characters won't create horizontal overflow */
+    margin: 0;
+    padding: 0;
+    tab-size: 4;
+  }
+
+  @media print {
+    .sheet { box-shadow: none; margin: 0; }
+    .title, .sourceurl { color: #000; }
+  }
+</style>
+</head>
+<body>
+  <pre>
+/*
+
 /* In an interview, Direct Memory Access (DMA) should be explained as a specialized hardware 
 unit that allows peripherals to transfer data directly to or from the system memory without 
 involving the CPU for every byte.
@@ -44,3 +93,8 @@ If asked for a specific implementation example, describe a circular buffer for U
 "In an STM32 environment, I would set the DMA to Circular Mode. This allows the DMA to automatically wrap 
 around to the start of the buffer once it is full, enabling continuous data reception without manual CPU restarts. 
 I would then use the Half-Transfer and Transfer-Complete interrupts to process data in chunks without missing any incoming bytes.*/
+
+  </pre>
+</div>
+</body>
+</html>
