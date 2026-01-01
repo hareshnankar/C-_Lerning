@@ -1,3 +1,49 @@
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>adc.c — A4 printable (larger font)</title>
+<style>
+  html,body { height:100%; margin:0; padding:0; background:#fff; color:#000; }
+  /* A4 print area and margins */
+  @page { size: A4; margin: 15mm; }
+  body { padding: 0; margin: 0; }
+
+  /* The content area equals printable width: 210mm - 2*15mm = 180mm */
+  .sheet {
+    box-sizing: border-box;
+    width: 180mm;               /* printable content width */
+    min-height: 297mm;
+    padding: 0;
+    margin: 0 auto;
+    background: white;
+  }
+
+  /* Title and source (non-file content) */
+  .title { font-family: sans-serif; font-size: 16pt; margin: 6mm 0 4mm 0; }
+  .sourceurl { font-family: sans-serif; font-size: 9pt; color:#444; margin-bottom:6mm; }
+
+  /* Larger, readable monospace font for multiple pages */
+  pre {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 14pt;           /* BIGGER font as requested */
+    line-height: 1.28;
+    white-space: pre;          /* preserve spaces and line breaks exactly */
+    overflow-wrap: anywhere;   /* allow breaking long sequences to fit the printable width */
+    word-break: break-all;     /* ensures long repeated characters won't create horizontal overflow */
+    margin: 0;
+    padding: 0;
+    tab-size: 4;
+  }
+
+  @media print {
+    .sheet { box-shadow: none; margin: 0; }
+    .title, .sourceurl { color: #000; }
+  }
+</style>
+</head>
+<body>
+  <pre>
 /*
 SAE J1939 is a higher-layer protocol (HLP) built on top of the CAN bus. While standard CAN defines the physical
 and data link layers (the "highway"), J1939 provides the "language" for communication in heavy-duty vehicles
@@ -389,3 +435,7 @@ ECU 01 is sending a specific Request (PDU1) to the Engine (ECU 00)
 asking it to broadcast PGN 61444 (Engine Speed/Torque).
 
 */
+  </pre>
+</div>
+</body>
+</html>
