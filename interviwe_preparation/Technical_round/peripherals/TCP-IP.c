@@ -85,5 +85,53 @@ Step 4: Connection Termination (Four-Way Handshake)
 Once all data has been successfully transmitted and confirmed, a final four-way handshake is 
 used to close the session. This ensures that both the sender and the receiver have finished 
 their communication and that no data is left in transit.
-*/
+
+TCP/IP SOCKET PROGRAMMING OVERVIEW
+----------------------------------------------------------------------------
+A socket acts as an endpoint for communication between two devices on a 
+network. It uses the TCP/IP protocol to ensure that data is delivered 
+reliably to the correct destination.
+
+1. Identification (IP and Port)
+A socket is defined by an IP Address and a Port Number. The IP address 
+(Internet Protocol) is used to find the specific machine on the network, 
+while the Port Number is used to identify the specific application or 
+ service running on that machine.
+  
+ 2. Server-Side Setup
+ To receive data, a server performs three main actions:
+ - Binding: The application binds the socket to a specific IP and Port so 
+   the OS knows where to direct incoming traffic.
+ - Listening: The server enters a state where it waits for a client to 
+   request a connection.
+ - Accepting: When a request arrives, the server accepts it, completing 
+ the TCP Three-Way Handshake (SYN, SYN-ACK, ACK) to establish a connection.
+  
+ 3. Client-Side Connection
+ The client initiates communication by creating a socket and calling a 
+ connect function. This sends a request to the server's IP and Port. Once 
+ the server accepts, the TCP connection is fully established, and a 
+ virtual "pipe" is created between the two applications.
+  
+ 4. Data Transmission (The TCP Role)
+ Once connected, data is sent as a continuous stream of bytes. TCP handles:
+ - Segmentation: It breaks large data into smaller packets.
+ - Acknowledgments: The receiver sends an "ACK" for every packet received. 
+ If the sender doesn't get an ACK, it retransmits the data.
+ - Sequencing: TCP ensures that packets arriving out of order are 
+ rearranged correctly before the application reads them.
+  
+ 5. Reading and Writing
+ In socket programming, sending and receiving data is handled like reading 
+ or writing to a file. An application "writes" data to the socket to send 
+ it and "reads" from the socket to receive data sent by the other side.
+ 
+ 6. Closing the Connection
+ When the communication is finished, the TCP/IP protocol performs a 
+ Four-Way Handshake to close the connection. This ensures that all data in 
+ transit has been received and acknowledged before the socket is destroyed 
+ and the port is released.
+ ----------------------------------------------------------------------------
+ */
+
 
