@@ -126,9 +126,63 @@ If Byte 1 = 1, then Bytes 2-8 contain a completely different set of data.
 This is common in complex messages like VIN (Vehicle Identification Number) or long diagnostic lists
 
 
+Example in which we can identify PGNs and SNGs 
 
+To identify PGNs and SPNs from a raw J1939 frame, you must break the 29-bit 
+identifier and the 8-byte payload into their specific functional components
 
+1. The Raw Data Frame
 
+Imagine your CAN logger captures the following message:
+ID: 0CF00401 DLC: 8 DATA: F1 FF AA D0 1D FF FF FF
+
+2. Identifying the PGN (The Header)
+First, we convert the Hex ID to Binary to see the J1939 fields.
+Hex ID: 0C F0 04 01
+
+Step 1: Convert Hex to Binary
+Convert the first part of the hex ID (0C) into an 8-bit binary string
+0 in binary is 0000
+C in binary is 1100
+Full Byte 1: 00001100
+
+Step 2: Identify the Bit Positions
+In a 29-bit extended CAN ID, the bits are numbered 0 to 28. 
+J1939 assigns these bits to specific fields:
+1.Bits 0–7: Source Address (Last two hex digits: 01)
+2.Bits 8–23: PDU Specific and PDU Format (Middle hex digits: F004)
+3.Bits 24–25: Data Page and Extended Data Page
+4.Bits 26–28: Priority (The 3 most significant bits of the 29-bit ID)
+
+Step 3: Extract the Priority Bits
+When you look at the first two bytes of your ID 0CF00401, they are laid out in a 32-bit register like this:
+000(ignored/filler for 32-bit) + 011(Priority) + 00 ( Reserved or EDP / Data Page ) + 11110000 (PDU Format)
+
+Summary of Priority Values
+1.000 (0) = Highest Priority
+2.011 (3) = Standard Control Message (Your value)
+3.111 (7) = Lowest Priority
+
+Priority (3 bits)	        011 (3)
+EDP & DP (2 bits)         00  (page 0)
+PDU Format (8 bits)       F0  (240)
+PDU Specific (8 bits)     04  (04)
+Source Address (8 bits)   01  (1)
+
+1.Priority: 3 (High priority).
+2.PGN Extraction: Combine the Data Page, PF, and PS
+->In Hex: 0x0F004
+->In Decimal: PGN 61444 (Electronic Engine Controller 1 - EEC1).
+->Source Address: 01 (Typically the Engine Controller).
+
+Identifying the Parameters (SPNs)
+Now we look at the 8 Bytes of Data using the "blueprint" for PGN 61444 found in 
+the SAE J1939-71 standard.
+Data: F1 FF AA D0 1D FF FF FF
+
+Raw Hex    SPN Name   	           Calculation Rule (SLOT)           Physical Value
+           Engine Torque Mode      Bits 1-4                          0001 (Internal Control)
+           Driver Demand Torque    1% per bit, -125 Offset           255 = Not Available
 
 
 
