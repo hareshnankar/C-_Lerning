@@ -186,7 +186,8 @@ Raw Hex    SPN Name   	           Calculation Rule (SLOT)           Physical Val
 
 
 
-
+diaganosticmsg fram formate 
+trasport protocal formate communication (handshaking)
 
 
 */
