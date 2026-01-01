@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>adc.c — A4 printable (larger font)</title>
+<title>CAN</title>
 <style>
   html,body { height:100%; margin:0; padding:0; background:#fff; color:#000; }
   /* A4 print area and margins */
@@ -46,17 +46,20 @@
 <body>
   <pre>
 /*
+ * ====================================================================================
+
 The Controller Area Network (CAN) is a robust serial communication protocol
-that allows microcontrollers and electronic devices (nodes) to communicate with each other 
-without a central host computer. 
-Originally developed by Bosch for automotive applications to reduce wiring complexity, 
-it is now a global standard used in industrial automation, medical equipment, and aerospace
+that allows microcontrollers and electronic devices (nodes) to communicate with each 
+other without a central host computer.Originally developed by Bosch for automotive 
+applications to reduce wiring complexity, 
+it is now a global standard used in industrial automation, medical equipment, and 
+aerospace
 
 3 Imporatant points 
 Priority-Based (Arbitration): 
 Not all messages are equal. CAN uses "Arbitration" to ensure that critical messages 
-(like "Apply Brakes") always get through before less important ones (like "Temperature Update") 
-without any data collisions.
+(like "Apply Brakes") always get through before less important ones 
+(like "Temperature Update") without any data collisions.
 
 Noise Immunity (Differential Signaling): Because it uses two wires (CAN High and Low),
 it is extremely resistant to electrical noise, which is why it’s the standard 
@@ -74,8 +77,8 @@ the node automatically knows and tries to send it again
 
 Interview Tip: If they ask for a real-world analogy, say:
 "It’s like a group of people in a dark room. Anyone can speak when it’s quiet,
-but if two people start at once, the one with the most important news keeps talking while 
-the other stops to listen. Everyone hears the message, 
+but if two people start at once, the one with the most important news keeps talking 
+while the other stops to listen. Everyone hears the message, 
 but only the person it concerns takes action.
 
 Layers of CAN 
@@ -118,8 +121,8 @@ the bus remains recessive
 Dominant Bit (Logical 0):
 Voltage: CAN_H is driven up to 3.5V, and CAN_L is driven down to 1.5V
 V_diff: Approximately 2.0V.
-Behavior: A dominant bit physically overrides a recessive bit. If one node sends a '0' 
-while another sends a '1', the bus will reflect a '0', which is essential for 
+Behavior: A dominant bit physically overrides a recessive bit. If one node sends a 
+'0' while another sends a '1', the bus will reflect a '0', which is essential for 
 message arbitration (from MSB to LSB )
 
 CAN uses  Non-Return to Zero (NRZ) Coding
@@ -140,7 +143,8 @@ the frame entirely(synchromisation is done using voltage level changes )
 
 2. Bit Stuffing: The Solution
 To fix the lack of transitions in NRZ, CAN uses bit stuffing. 
-This process ensures that the signal "toggles" often enough for receivers to stay in sync
+This process ensures that the signal "toggles" often enough for receivers to stay in 
+sync
 
 The Rule: Whenever the transmitter detects five consecutive bits of the same 
 polarity (five 0s or five 1s) in the data stream, it automatically inserts
@@ -150,8 +154,8 @@ Example:
 Original Data: 1 1 1 1 1
 Stuffed Stream: 1 1 1 1 1 0 (the 0 is the "stuff bit")
 
-Syncing on the Edge: This extra bit creates a forced voltage transition (a rising or 
-falling edge). Every receiver on the bus sees this transition and resets its
+Syncing on the Edge: This extra bit creates a forced voltage transition (a rising 
+or falling edge). Every receiver on the bus sees this transition and resets its
 internal clock, ensuring it stays perfectly aligned with the transmitter.
 
 3. Key Details
@@ -187,7 +191,8 @@ Purpose: These match the cable's characteristic impedance to prevent
 signal reflections (echoes) that could distort data and cause errors.
 
 Verification: When the network is powered off, the resistance measured 
-between CAN_H and CAN_L should be approximately 60 ohm (two 120 ohm) resistors in parallel)
+between CAN_H and CAN_L should be approximately 60 ohm (two 120 ohm) resistors 
+in parallel)
 
 Topology: High-speed CAN typically uses a linear bus topology. 
 To minimize reflections, "stubs" (branches from the main bus to individual nodes) 
@@ -217,8 +222,9 @@ It serves as the "clock tick" for the CAN controller to build and manage the
 bit timing segments
 
 Definition and Calculation:
-TQ is derived from the peripheral clock of the microcontroller (MCU) by applying a Baud Rate Prescaler (BRP). 
-The prescaler slows down the high-frequency system clock to a manageable speed for the CAN protocol.
+TQ is derived from the peripheral clock of the microcontroller (MCU) by applying
+a Baud Rate Prescaler (BRP). The prescaler slows down the high-frequency system
+clock to a manageable speed for the CAN protocol.
 
 The standard formula is:
 TQ = BRP / System clock freq = 4 / 40 MHz = 100ns
@@ -250,31 +256,36 @@ FRAM FORMATE
 Arbitration:
 nodes transmit their identifiers 
 bit by bit(MSB TO LSB). NODE 1 -> 0001 AND NODE 2 -> 0011 -> WINNER NODE1
-If a node transmitting a "1" detects a "0" from another node, it stops transmitting, 
-recognizing that the other node has a higher priority. This process ensures that 
-the message with the highest priority (the lowest ID) successfully gets through 
-without collisions or data los
+If a node transmitting a "1" detects a "0" from another node, it stops 
+transmitting, recognizing that the other node has a higher priority. This
+process ensures that the message with the highest priority (the lowest ID)
+successfully gets through without collisions or data los
 
 ->massege validation 
 If any node on the bus detects an error during these checks, 
-it "destroys" the message by sending an Error Frame, forcing the transmitter to try again
+it "destroys" the message by sending an Error Frame, forcing the transmitter
+to try again
 
 The five primary validation checks are:
 1.CRC Check: The receiver calculates its own checksum 
 from the data and compares it to the CRC Field sent by the transmitter.
-2.Bit Stuffing Check: If the receiver sees more than 5 consecutive bits of the same level 
-(000000 or 111111),it flags a "stuffing error," as the 6th bit must always 
+2.Bit Stuffing Check: If the receiver sees more than 5 consecutive bits of 
+the same level (000000 or 111111),it flags a "stuffing error," as the 6th 
+bit must always 
 be an opposite "stuff" bit for synchronization
-3.Form Check: The receiver ensures "fixed-form" fields—like the CRC Delimiter, ACK Delimiter,
-and EOF—are correctly sent as Recessive (1) bits
-4.ACK Check: The transmitter sends a Recessive bit in the ACK Slot; if it doesn't "hear" a 
-Dominant bit back from at least one receiver, it declares the message invalid
-5.Bit Monitoring: The transmitter "listens" to every bit it sends. If it sends a 1 but sees 
-a 0 (outside of the arbitration or ACK phases), it signals a bit error.
+3.Form Check: The receiver ensures "fixed-form" fields—like the CRC Delimiter, 
+ACK Delimiter,and EOF—are correctly sent as Recessive (1) bits
+4.ACK Check: The transmitter sends a Recessive bit in the ACK Slot; if it 
+doesn't "hear" a Dominant bit back from at least one receiver, it declares 
+the message invalid
+5.Bit Monitoring: The transmitter "listens" to every bit it sends. If it 
+sends a 1 but sees a 0 (outside of the arbitration or ACK phases), it 
+signals a bit error.
 
 ->Fault Confinement
 Every node maintains two internal counters: the Transmit Error Counter (TEC) and 
-the Receive Error Counter (REC). Based on these values, a node exists in one of three states:
+the Receive Error Counter (REC). Based on these values, a node exists in one of 
+three states:
 1. Error Active (Healthy)
 Condition: Both TEC and REC are less than 128.
 Behavior: The node participates fully. If it detects an error, 
@@ -293,11 +304,13 @@ talking so the rest of the network can keep working smoothly without interferenc
 
 ->1. Message Filtering (Acceptance Filtering)
 Message filtering happens in the hardware of the CAN controller. This allows the 
-controller to automatically discard irrelevant messages without waking up the main CPU
-Filter Masks & IDs: You configure "Acceptance Masks" and "Acceptance Filters."
+controller to automatically discard irrelevant messages without waking up the
+main CPU Filter Masks & IDs: You configure "Acceptance Masks" 
+and "Acceptance Filters."
 ->Filter ID: The specific ID you are looking for (e.g., 0x123).
 ->Filter Mask: Tells the hardware which bits of the ID to ignore. 
-  For example, a mask could tell the controller to "only look at the first 3 bits" of an ID
+For example, a mask could tell the controller to "only look at the first 3 bits" of 
+an ID
 Benefits: This ensures that if a car has 100 different messages flying across the bus, 
 the Engine Control Unit (ECU) only "sees" the 5 messages it actually needs to operate, 
 improving 2025 system efficiency. [1, 2]
@@ -311,10 +324,11 @@ Receive FIFOs: Incoming messages that pass the filter are stored in a First-In-F
 (FIFO) buffer until the CPU is ready to read them.
 
 Status Reporting:
-Transmission Status: The layer notifies the software if a message was "Sent Successfully,"
-"Failed due to Arbitration loss," or "Failed due to Error."
-Error Tracking: It reports the current status of the Fault Confinement counters (TEC and REC) 
-so the software knows if the node is in Error Active, Error Passive, or Bus Off state. [3, 4]
+Transmission Status: The layer notifies the software if a message was 
+"Sent Successfully,""Failed due to Arbitration loss," or "Failed due to Error."
+Error Tracking: It reports the current status of the Fault Confinement counters 
+(TEC and REC) so the software knows if the node is in Error Active, Error Passive, 
+or Bus Off state. [3, 4]
   </pre>
 </div>
 </body>

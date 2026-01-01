@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>adc.c — A4 printable (larger font)</title>
+<title>SPI</title>
 <style>
   html,body { height:100%; margin:0; padding:0; background:#fff; color:#000; }
   /* A4 print area and margins */
@@ -47,17 +47,19 @@
   <pre>
 
 /*
- * Serial Peripheral Interface (SPI) - Detailed Explanation (Single master in standerd way but can be 
- * multimaster using software and hardware 1master at time)
+ * ====================================================================================
+ * Serial Peripheral Interface (SPI) - Detailed Explanation (Single master in standerd
+ * way but can be  multimaster using software and hardware 1master at time)
  *
  * Definition:
- * SPI is a synchronous serial communication protocol used for high-speed data exchange
- * between microcontrollers and peripheral devices such as sensors, displays, and memory chips.
+ * SPI is a synchronous serial communication protocol used for high-speed data 
+ * exchange between microcontrollers and peripheral devices such as sensors, displays,
+ * and memory chips.
  *
  * SPI Bus Components:
- * - **Master Device**: Controls the communication and generates the clock signal.
- * - **Slave Device(s)**: Responds to the master's commands, multiple slaves can be connected.
- * - **SPI Signals**:
+ * -*Master Device*: Controls the communication and generates the clock signal.
+ * -*Slave Device(s)*: Responds to the master's commands, multiple slaves can connected
+ * -*SPI Signals*:
  *   - **MOSI (Master Out Slave In)**: Data sent from master to slave.
  *   - **MISO (Master In Slave Out)**: Data sent from slave to master.
  *   - **SCLK (Serial Clock)**: Synchronizes data transmission.
@@ -111,30 +113,27 @@
  * - Microcontroller Limitations: Some devices have max SPI clock limits.
  * - Bus Length & Noise: Longer cables and interference can reduce effective speed.
  *
-/*
  * Typical SPI Speed Ranges
  *
  * SPI (Serial Peripheral Interface) supports different speed levels depending on
  * the hardware capabilities of microcontrollers, sensors, displays, and memory chips.
  *
- * | Speed Category        | Typical Range    | Application Examples                               |
- * |-----------------------|----------------  |------------------------------------------------    |
- * | Low-Speed SPI         | 100 kHz - 1 MHz  | Basic sensors, low-speed peripherals               |
- * | Standard SPI          | 1 MHz - 25 MHz   | Microcontroller communication, ADCs                |
- * | High-Speed SPI        | 25 MHz - 100 MHz | Fast memory chips, TFT/OLED displays               |
- * | Ultra-High-Speed SPI  | 100 MHz+         | Specialized applications, high-speed data transfer |
+ * | Speed Category        | Typical Range    | Application Examples                  
+ * |-----------------------|----------------  |---------------------------------------
+ * | Low-Speed SPI         | 100 kHz - 1 MHz  | Basic sensors, low-speed peripherals           
+ * | Standard SPI          | 1 MHz - 25 MHz   | Microcontroller communication, ADCs          
+ * | High-Speed SPI        | 25 MHz - 100 MHz | Fast memory chips, TFT/OLED displays         
+ * | Ultra-High-Speed SPI  | 100 MHz+         | SPECIAL App high-speed data transfer    
  *
  * Factors Affecting SPI Speed:
  * - **Microcontroller Limitations**: Each MCU has a max supported SPI clock.
  * - **Peripheral Constraints**: Devices like EEPROMs and sensors have speed limits.
  * - **Bus Length & Noise**: Longer cables and signal interference can degrade speed.
  * - **Clock Configuration**: The SPI clock (SCLK) directly defines data transfer rate.
-
-/*
+ *
  * ===========================================================================
  * I2C VS. SPI PROTOCOL COMPARISON (ARCHITECTURAL DIFFERENCES)
  * ===========================================================================
- *
  * | Feature          | I2C Protocol                 | SPI Protocol          |
  * |------------------|------------------------------|-----------------------|
  * | Communication    | Half-Duplex                  | Full-Duplex           |
@@ -143,7 +142,6 @@
  * | Verification     | ACK/NACK after every byte    | No Inherent Check     |
  * | Bus Topology     | Multi-master Capable         | Single-master Only    |
  * | Drive Type       | Open-drain (needs pull-ups)  | Push-pull             |
- *
  * ---------------------------------------------------------------------------
  * Note: This comparison excludes physical pin counts and maximum clock speeds.
  * For 2025 high-reliability embedded designs, choose I2C for complex bus 
@@ -169,10 +167,6 @@
  * - Display interfaces (OLED, TFT, LCD).
  * - Storage devices (Flash memory, SD cards).
  * - High-speed data transfer in embedded systems.
- *
- * Summary:
- * SPI is a powerful serial communication protocol ideal for high-speed embedded applications.
- * Proper SPI configuration ensures reliable and efficient data exchange.
  */
     </pre>
 </div>
