@@ -49,14 +49,145 @@ can use the same underlying J1939 framing without overlapping their specific mes
 definitions with trucking parameters on Page 0
 
 3. Transport Protocol (TP) for Large Messages
-J1939 allows messages up to 1785 bytes by splitting data across multiple CAN frames. It uses two primary methods
-Broadcast Announce Message (BAM) : Used to send large data to all nodes. It begins with a BAM message 
-(PGN 60416) defining the data length and PGN,followed by Data Transfer (DT) frames (PGN 60160) sent every 10–200ms
+In J1939, the transport layer protocol (defined in J1939-21) is used to send data larger than 8 bytes by 
+splitting it into multiple packets. It uses two specialized PGNs to manage the 
+communication: 
+TP.CM (Connection Management, PGN 60416)     for handshaking 
+and 
+TP.DT (Data Transfer, PGN 60160)            for the actual data
+Communication happens via two primary methods:
+1.BAM (Broadcast)
+2.RTS/CTS (Peer-to-Peer).
 
-RTS/CTS (Connection Mode):
-Request to Send (RTS): Sender asks to transmit data.
-Clear to Send (CTS): Receiver confirms it is ready for a specific number of packets.
-End of Message Acknowledgment (EoMA): Receiver confirms successful reception
+3.1. Broadcast Announce Message (BAM)
+This method is used when an ECU needs to send large data (like a VIN or active fault list) to the entire network
+Step 1: The Announcement (TP.CM): The sender broadcasts a BAM message (Control Byte = 32) containing 
+the total number of bytes and the PGN being sent.
+
+IN DETAIL EXPALINATION WITH EXAMPLE:
+Imagine an engine control unit (ECU) needs to send a long text string of diagnostic information 
+(e.g., 50 bytes of data) to all other devices on the network. Since a standard CAN frame can 
+only hold 8 bytes, the J1939 transport layer uses BAM to "package" and broadcast this data.
+1.The Announcement (Control Function):
+-->The source ECU sends a single BAM Control Frame.
+-->This frame informs the entire network: "I am about to broadcast 50 bytes of 
+   data regarding Parameter Group Number (PGN) X, and it will take 7 packets to complete.".
+
+
+Step 2: Data Transfer (TP.DT): The sender starts transmitting the data packets. 
+Each packet contains a 1-byte sequence number followed by 7 bytes of data.
+
+IN DETAIL EXPALINATION WITH EXAMPLE:
+Continue from above ...
+The Data Transfer (Data Transfer Function):
+-->The source ECU then sends the 50 bytes across 7 consecutive CAN frames (Data Transfer Packets).
+-->Each packet contains a sequence number (1 through 7) so receiving nodes can reassemble 
+   them in the correct order.
+
+
+Timing: The sender must wait 50–200ms between each packet to ensure other ECUs have time to process the data.
+No Handshake: Since it is a broadcast, receivers do not send any acknowledgment; if a packet is missed, it is lost.
+
+IN DETAIL EXPALINATION WITH EXAMPLE:
+Continue from above ...
+3.No Handshake:
+n a BAM session, the sender does not wait for an acknowledgment (ACK) from the receivers. It simply sends 
+the data at a regulated interval (typically 50–200 ms between packets) to ensure no receiver is overwhelmed.
+
+Key Characteristics of BAM
+1.One-to-Many: Used for broadcasting information to the entire network rather than a specific destination.
+2.Connectionless: There is no "Ready to Send" or "Clear to Send" handshake between the sender and receivers.
+3.Payload Capacity: It allows for the transmission of messages up to 1,785 bytes in length
+
+J1939 TRANSPORT LAYER BAM EXAMPLE
+BAM (Broadcast Announce Message) allows a node to send data larger than 8 bytes to the entire network.
+
+Example Scenario: 20 Bytes of Data
+Target PGN: 65260 (Vehicle Identification)
+Required frames: 3 CAN frames
+
+Connection Management Frame (TP.CM)
+The source node sends an announcement to let all other nodes know a multi-packet message is starting.
+CAN ID: 0x18ECFFSA (Priority 6, PGN 60416, Destination 255/Global, Source SA).
+Data Field (8 Bytes):
+Byte 1 (Control Byte): 32 (0x20) indicates BAM.
+Bytes 2-3: Total number of data bytes (20 00 for 20 bytes, LSB first).
+Byte 4   : Total number of packets (03 for 3 packets).
+Byte 5   : Reserved (always 0xFF).
+Bytes 6-8: PGN of the actual message being sent (AC FE 00 for PGN 65260, LSB first).
+
+Data Transfer Packets (TP.DT)
+Following the BAM announcement, data is sent in consecutive frames with a delay of 50 to 200ms.
+CAN ID: 0x18EBFFSA (Priority 6, PGN 60160, Destination 255/Global, Source SA).
+Data Field Structure: Byte 1 is the Sequence Number, and Bytes 2 to 8 are the actual data.
+Packet 1
+Byte 1: 01 (Sequence Number)
+Bytes 2-8: First 7 bytes of data
+Packet 2
+Byte 1: 02 (Sequence Number)
+Bytes 2-8: Next 7 bytes of data
+Packet 3
+Byte 1: 03 (Sequence Number)
+Bytes 2-7: Last 6 bytes of data
+Byte 8: 0xFF (Padding byte)
+Key Technical Rules:
+Unidirectional: BAM is connectionless; the sender does not wait for a "Clear to Send" or acknowledgment from receivers.
+Packet Limit: A maximum of 255 packets can be sent in one session, allowing for up to 255 X 7 = 1,785 bytes of data.
+Padding: If the final packet does not have enough data to fill the 8-byte CAN frame, the unused bytes are padded with 0xFF.
+
+3.2The Request to Send / Clear to Send (RTS/CTS) mechanism is a peer-to-peer communication method used in J1939
+protocols for direct data transfer between two specific Electronic Control Units (ECUs), such as during a software update. 
+The process follows these four steps:
+Step 1: Request to Send (RTS). The sender initiates the process by sending a Transport Protocol 
+        Connection Management (TP.CM) message to a specific destination address to request a data transfer. 
+Step 2: Clear to Send (CTS). The receiver responds with a TP.CM message. This message informs
+        the sender how many data packets the receiver is ready to accept at once
+        and specifies which packet number to start with. 
+Step 3: Data Transfer (TP.DT). The sender transmits the data using Transport Protocol Data 
+        Transfer messages. Each message is 8 bytes long, consisting of 1 byte for the sequence 
+        number and 7 bytes for the actual data. 
+Step 4: End of Message Acknowledgment (EoMA). After the receiver successfully collects all 
+        the data, it sends an acknowledgment message with a Control Byte set to 19 to
+        confirm receipt and close the connection
+
+In a real-world J1939 scenario, the Request to Send / Clear to Send (RTS/CTS) process is
+commonly used to transfer data larger than 8 bytes, such as an Engine Configuration or 
+Software Update. Below is a technical example of an ECU at address 0x81 sending a 
+15-byte message (3 packets) to an ECU at address 0x80.
+
+Request to Send (RTS)
+The sender (0x81) initiates the transfer for a specific Parameter Group Number (PGN).
+CAN ID: 0x1CEC8081 (Priority 7, PGN 0xEC00, Destination 0x80, Source 0x81)
+Data Bytes: 10 0F 00 03 FF 5F EA 00
+10: Control Byte for RTS.
+0F 00: Total bytes to send (15 decimal).
+03: Total number of packets.
+FF: Reserved.
+5F EA 00: The PGN being sent (PGN 59999 in this example).
+
+Clear to Send (CTS)
+The receiver (0x80) confirms it is ready and tells the sender how many packets to transmit.
+CAN ID: 0x1CEC8180 (Destination 0x81, Source 0x80)
+Data Bytes: 11 03 01 FF FF 5F EA 00
+11: Control Byte for CTS.
+03: Number of packets the receiver can accept right now.
+01: The packet number to start with.
+5F EA 00: PGN confirmation.
+
+Data Transfer (TP.DT)
+The sender transmits the actual data in segments using the TP.DT PGN (0xEB00).
+Packet 1: 0x1CEB8081 | Data: 01 [7 bytes of data]
+Packet 2: 0x1CEB8081 | Data: 02 [7 bytes of data]
+Packet 3: 0x1CEB8081 | Data: 03 [Remaining 1 byte of data + 6 bytes of 0xFF padding]
+
+End of Message Acknowledgment (EoMA)
+Once all 3 packets are received, the receiver closes the session.
+CAN ID: 0x1CEC8180
+Data Bytes: 13 0F 00 03 FF 5F EA 00
+13: Control Byte for End of Message Acknowledgment (decimal 19).
+0F 00: Confirms 15 total bytes received.
+03: Confirms 3 total packets received.
+
 
 4. Network Management (Address Claiming)
 Every ECU must have a unique address (0–253)
@@ -133,8 +264,17 @@ identifier and the 8-byte payload into their specific functional components
 
 1. The Raw Data Frame
 
+
+
+EXAMPLE 1 : 
 Imagine your CAN logger captures the following message:
-ID: 0CF00401 DLC: 8 DATA: F1 FF AA D0 1D FF FF FF
+ID: 0CF00401 DLC: 8 DATA: F1 FF AA D0 1D FF FF FF (PDU2 EXAPLE)
+
+How to Identify PDU1 vs. PDU2
+The J1939 standard uses the 8-bit PDU Format field (PF) within the 29-bit identifier
+to decide how the message is addressed:
+PDU1 --> 0 to 239 (0x00 to 0xEF)   -> Point-to-Point -> PS	Contains the Destination Address
+PDU2 --> 240 to 255 (0xF0 to 0xFF) -> Broadcast      -> PS 	Contains a Group Extension
 
 2. Identifying the PGN (The Header)
 First, we convert the Hex ID to Binary to see the J1939 fields.
@@ -181,13 +321,74 @@ the SAE J1939-71 standard.
 Data: F1 FF AA D0 1D FF FF FF
 
 Raw Hex    SPN Name   	           Calculation Rule (SLOT)           Physical Value
-           Engine Torque Mode      Bits 1-4                          0001 (Internal Control)
-           Driver Demand Torque    1% per bit, -125 Offset           255 = Not Available
+F1         Engine Torque Mode      Bits 1-4                          0001 (Internal Control)
+FF         Driver Demand Torque    1% per bit, -125 Offset           255 = Not Available
+AA         Actual Engine Torque    1% per bit, -125 Offset           170-125= 45
+D0 1D      Engine Speed            0.125 RPM per bit, 0 Offset       Calculated below
+FF...      Various Status          Bit-mapped                        Not Available
 
-
+EXAMPLE 2 : 
 
 diaganosticmsg fram formate 
 trasport protocal formate communication (handshaking)
+CAN /J1939 Init speps from scrach in project 
 
+EXAMPLE 2: J1939 PDU1 (Point-to-Point) Decoding
+-------------------------------------------------------------------------
+Imagine your CAN logger captures the following message:
+ID: 18EA0001   DLC: 3   DATA: 04 F0 00
+
+1. How to Identify PDU1 vs. PDU2
+-------------------------------------------------------------------------
+The J1939 standard uses the 8-bit PDU Format field (PF) to decide 
+how the message is addressed:
+PDU1 --> 0 to 239 (0x00 to 0xEF) -> Point-to-Point -> PS = Destination Address
+PDU2 --> 240 to 255 (0xF0 to 0xFF) -> Broadcast      -> PS = Group Extension
+
+2. Identifying the PGN (The Header)
+-------------------------------------------------------------------------
+Hex ID: 18 EA 00 01
+
+Step 1: Convert Hex to Binary (First Byte)
+Hex 18 -> Binary 00011000
+
+Step 2: Identify the Bit Positions (29-bit Extended ID)
+Bits 0-7   : Source Address (Last two hex digits: 01)
+Bits 8-23  : PDU Specific and PDU Format (Middle hex digits: EA00)
+Bits 24-25 : Data Page and Extended Data Page (EDP/DP)
+Bits 26-28 : Priority (The 3 most significant bits)
+
+Step 3: Extract the Priority Bits
+Layed out in a 32-bit register:
+filler + Priority + EDP/DP + PDU Format
+
+Summary of Fields:
+Priority (3 bits)       : 110 (6)
+EDP & DP (2 bits)       : 00  (Page 0)
+PDU Format (8 bits)     : EA  (234) -> [PDU1 because 234 < 240]
+PDU Specific (8 bits)   : 00  (0)   -> [Destination Address = Engine]
+Source Address (8 bits) : 01  (1)   -> [Sender = Management Computer]
+
+PGN Extraction:
+For PDU1, the Destination Address is masked to 00 for the PGN label.
+-> In Hex: 0x0EA00
+-> In Decimal: PGN 59904 (Request Message)
+
+3. Identifying the Parameters (SPNs)
+-------------------------------------------------------------------------
+In a Request Message (PGN 59904), the data bytes indicate the PGN being 
+requested from the target ECU.
+
+Data: 04 F0 00
+
+Raw Hex    Parameter Name         Description
+--------   --------------------   ---------------------------------------
+04 F0 00   Requested PGN          Stored as LSB first (Intel Byte Order)
+                                  Reconstructed Hex: 0x00F004
+                                  Decimal: PGN 61444 (EEC1)
+
+Summary:
+ECU 01 is sending a specific Request (PDU1) to the Engine (ECU 00) 
+asking it to broadcast PGN 61444 (Engine Speed/Torque).
 
 */
