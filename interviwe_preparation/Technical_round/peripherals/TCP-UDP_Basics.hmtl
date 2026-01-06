@@ -120,6 +120,29 @@ Disadvantages of UDP
 4.It has no error control, so it drops packets when errors are detected.
 5.It cannot sequence data, so data can arrive in any order or out of order.
 
+/*
+ * Protocol Comparison: TCP vs. UDP
+ *
+ * This table highlights the key differences between the Transmission Control
+   Protocol (TCP) and the User Datagram Protocol (UDP).
+ */
+
+/*
+ * Feature 	    | TCP	                    | UDP
+ * -------------|-------------------------|----------------------------------------------------
+ * Connection	  | (Handshake required)	  | (No handshake)
+ * Reliability	| Guaranteed delivery; 	  | No guarantee; 
+                  retransmits lost data   | lost packets are not resent
+ * Ordering	    | Packets arrive in       | No inherent order; packets
+                  the exact order sent	    may be jumbled
+ * Speed	      | Slower(due to overhead) | Faster(less overhead) 
+ * Header Size	| 20–60 bytes (variable)	| 8 bytes (fixed)
+ * Usage	      | Web browsing, email,    | Gaming, live streaming,
+                  file transfers (HTTP,     VoIP (DNS, DHCP)
+                  SMTP, FTP)	  
+ */
+
+
 
  */
    </pre>
