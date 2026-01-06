@@ -74,8 +74,20 @@ TCP is best for:
 2.File transfers
 3.Web browsing
 
+Advantages of TCP
+1.It sets up and maintains a connection between sender and receiver.
+2.It checks for errors, guaranteeing data arrives at its destination unaltered.
+3.It confirms data arrival after delivery, or attempts to retransfer.
+4.It’s able to send data in a particular sequence.
 
+Disadvantages of TCP
 
+1.It uses more bandwidth and is slower than UDP.
+2.It can prevent data from loading if some data is lost.
+For example, it won’t load images on a web page until all of the page
+data has been delivered..
+3.It can’t multicast or broadcast.
+------------------------------------------------------------------------------------
 How does UDP work?
 The UDP protocol works by immediately firing data at the receiver who made a data 
 transmission request, until the transmission is complete or terminated. Sometimes 
@@ -91,6 +103,22 @@ to make sense of the data.
 2.Live streaming
 3.Online gaming
 4.Video chat
+
+Advantages of UDP
+1.No connection is needed to send or receive data, so apps and operating systems 
+ work faster.
+2.Broadcast and multicast transmission is available, meaning one UDP transmission 
+ can send data to multiple recipients.
+3.It endures packet loss, delivering data even if it's incomplete.
+4.Smaller packet size and less overhead reduce end-to-end delay.
+5.It can transmit live and real-time data.
+
+Disadvantages of UDP
+1.It’s connectionless, which makes data transfer unreliable.
+2.There’s no system in place to acknowledge a successful data transfer.
+3.There’s no way to know if data is delivered in its original state, or at all.
+4.It has no error control, so it drops packets when errors are detected.
+5.It cannot sequence data, so data can arrive in any order or out of order.
 
 
  */
