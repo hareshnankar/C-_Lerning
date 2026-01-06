@@ -69,6 +69,13 @@ new one. Heavy traffic or other issues may also prevent data from being sent. In
 case, the transmission is delayed (without breaking the connection).Thanks to these 
 controls, successful data delivery is guaranteed with TCP.
 
+TCP is best for:
+1.Email or texting
+2.File transfers
+3.Web browsing
+
+
+
 How does UDP work?
 The UDP protocol works by immediately firing data at the receiver who made a data 
 transmission request, until the transmission is complete or terminated. Sometimes 
@@ -79,6 +86,11 @@ While TCP establishes a formal connection via its “handshake” agreement befo
 sending data. UDP doesn’t have time for that. It speeds up data transfer by sending 
 packets without making any agreement with a receiver. Then, it’s up to the recipient 
 to make sense of the data.
+
+1.UDP is best for:
+2.Live streaming
+3.Online gaming
+4.Video chat
 
 
  */
