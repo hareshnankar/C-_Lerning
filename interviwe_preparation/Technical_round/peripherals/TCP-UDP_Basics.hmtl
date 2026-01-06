@@ -47,8 +47,27 @@
   <pre>
 /*
  * ====================================================================================
+How does TCP work?
+TCP works by using a “three-way handshake” — a three-step process that forms a 
+connection between a device and a server. The completion of the three-step process 
+establishes the non-stop connection, starts the transfer of data packets across the 
+internet, delivers them intact, and acknowledges delivery.
 
+Here’s how TCP works:
+The client device initiating the data transfer sends a sequence number (SYN) to the 
+server. It tells the server the number that the data packet transfer should begin with.
+The server acknowledges the client SYN and sends its own SYN number. This step is often 
+referred to as SYN-ACK (SYN acknowledgement).
+The client then acknowledges (ACK) the server’s SYN-ACK, which forms a direct connection 
+and begins the data transfer.
+The connection between the sender and receiver is maintained until the transfer is 
+successful. Every time a data packet is sent, it requires an acknowledgment from the 
+receiver. So, if no acknowledgment is received, the data is resent.
 
+If an error is acknowledged, the faulty packet is discarded and the sender delivers a 
+new one. Heavy traffic or other issues may also prevent data from being sent. In that 
+case, the transmission is delayed (without breaking the connection).Thanks to these 
+controls, successful data delivery is guaranteed with TCP.
 
 
  */
