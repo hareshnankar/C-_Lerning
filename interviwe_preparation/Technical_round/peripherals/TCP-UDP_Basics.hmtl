@@ -69,6 +69,17 @@ new one. Heavy traffic or other issues may also prevent data from being sent. In
 case, the transmission is delayed (without breaking the connection).Thanks to these 
 controls, successful data delivery is guaranteed with TCP.
 
+How does UDP work?
+The UDP protocol works by immediately firing data at the receiver who made a data 
+transmission request, until the transmission is complete or terminated. Sometimes 
+called a “fire-and-forget” protocol, UDP fires data at a recipient in no particular 
+sequence, without confirming delivery or checking if packets arrived as intended.
+
+While TCP establishes a formal connection via its “handshake” agreement before 
+sending data. UDP doesn’t have time for that. It speeds up data transfer by sending 
+packets without making any agreement with a receiver. Then, it’s up to the recipient 
+to make sense of the data.
+
 
  */
    </pre>
