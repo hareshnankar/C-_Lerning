@@ -22,7 +22,52 @@
  * | FCS (CRC)        | 4            | Error detection (Frame Check Sequence)          |
  * --------------------------------------------------------------------------------------
  * Note: Minimum frame size = 64 bytes | Maximum standard frame (MTU) = 1518 bytes.
- * 
+ * /*
+ * ETHERNET FRAME FIELD EXPLANATIONS:
+ *
+ * Preamble: 
+ *   - Purpose: Acts as a "get ready" signal and clock synchronization mechanism.
+ *   - Details: A 7-byte alternating pattern of 1s and 0s (10101010...) that helps the 
+ *     receiving device lock onto the incoming signal's timing.
+ *
+ * SFD (Start Frame Delimiter): 
+ *   - Purpose: The "starting gun." Marks the end of the preamble and the start of data.
+ *   - Details: A specific 1-byte code (10101011) that immediately precedes the destination
+       address.
+ *
+ * Destination MAC: 
+ *   - Purpose: Specifies the hardware address of the intended recipient device on 
+       the network.
+ *   - Details: A unique, 6-byte (48-bit) physical address assigned to every network 
+       interface card (NIC).
+ *
+ * Source MAC: 
+ *   - Purpose: Specifies the hardware address of the sender device.
+ *   - Details: A unique, 6-byte (48-bit) physical address of the NIC that initiated
+       the transmission.
+ *
+ * EtherType / Length: 
+ *   - Purpose: Identifies what kind of data is in the payload or how long the payload is.
+ *   - Details: A 2-byte field.
+ *     - If value >= 1536 (0x0600): Identifies the Network Layer protocol (e.g., IPv4, IPv6).
+ *     - If value <= 1500: Indicates the length of the subsequent data payload in bytes.
+ *
+ * Payload (Data): 
+ *   - Purpose: The actual message or data from an upper-layer protocol.
+ *   - Details: 
+ *     - Minimum Size (46 bytes): Required to meet the 64-byte minimum frame 
+          size (total frame, excluding preamble/SFD) necessary for 
+          CSMA/CD collision detection to work reliably. Padding is added if the 
+          original data is smaller.
+ *     - Maximum Size (1500 bytes): The standard Maximum Transmission Unit (MTU) limit.
+ *
+ * FCS (Frame Check Sequence): 
+ *   - Purpose: Error detection (Cyclic Redundancy Check - CRC).
+ *   - Details: A 4-byte mathematical checksum. The sender calculates it, and the
+       receiver recalculates it upon arrival. If the results don't match, the frame
+       is corrupted and dropped.
+ */
+
  * 3. KEY OPERATIONAL CONCEPTS
  * --------------------------------------------------------------------------------------
  * CSMA/CD:      Carrier Sense Multiple Access with Collision Detection.
