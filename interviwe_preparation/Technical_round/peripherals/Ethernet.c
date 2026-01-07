@@ -32,11 +32,30 @@
  * MTU:          Maximum Transmission Unit (Standard: 1500 bytes).
  * Jumbo Frames: Frames up to 9000 bytes used in data centers for efficiency.
  * 
- * 4. MODERN EVOLUTION (2026 STATUS)
- * --------------------------------------------------------------------------------------
- * Speeds:       Standard 1Gbps/10Gbps; 800Gbps and 1.6Tbps in AI/Data Centers.
- * PoE:          Power over Ethernet (802.3bt) delivers up to 100W to devices.
- * Reliability:  Ethernet is "Best-Effort." It detects errors (FCS) but does NOT
- *               retransmit. Retransmission is handled by Layer 4 (TCP).
- * ======================================================================================
+ ---------------------------------------------------------------------------------------
+CARRIER SENSE MULTIPLE ACCESS WITH COLLISION DETECTION (CSMA/CD)
+CSMA/CD is a set of rules used by computers to share a single network wire without 
+talking over each other. Think of it like a group of polite people having a conversation.
+THE BASIC RULES
+Carrier Sense (Listen): Before a computer sends data, it "listens" to the wire. If it 
+hears someone else talking, it waits.
+Multiple Access (Share): Many computers are connected to the same wire, and they 
+all have an equal right to use it.
+Collision Detection (Watch): While a computer is talking, it keeps listening. 
+If it hears another computer start talking at the same time, it knows a "collision" 
+happened.
+WHAT HAPPENS DURING A CLASH?
+Stop Immediately: If two computers talk at once, the data gets scrambled. Both 
+computers stop sending data right away.
+Warning Signal: They send out a "Jam Signal" to let every other computer know there
+was a crash.
+Random Wait: Each computer picks a random amount of time to wait (like one picking
+3 seconds and the other picking 5). This prevents them from crashing again by 
+starting at the exact same time.
+Try Again: Once the wait is over, the computer listens again and tries to send the 
+data one more time.
+SUMMARY
+In short: Listen first, talk if it's quiet, stop if someone else starts, wait a 
+random bit, and try again.
+
  */
