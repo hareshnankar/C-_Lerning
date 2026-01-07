@@ -73,9 +73,6 @@
  * CSMA/CD:      Carrier Sense Multiple Access with Collision Detection.
  *               Used in Half-Duplex (Legacy). Modern Ethernet uses Full-Duplex.
  * Duplex:       Full-Duplex allows simultaneous Send/Receive (No collisions).
- * Domains:      Switches break Collision Domains. Routers break Broadcast Domains.
- * MTU:          Maximum Transmission Unit (Standard: 1500 bytes).
- * Jumbo Frames: Frames up to 9000 bytes used in data centers for efficiency.
  * 
  ---------------------------------------------------------------------------------------
 CARRIER SENSE MULTIPLE ACCESS WITH COLLISION DETECTION (CSMA/CD)
