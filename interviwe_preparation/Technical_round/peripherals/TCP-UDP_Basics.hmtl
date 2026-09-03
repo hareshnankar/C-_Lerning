@@ -69,6 +69,32 @@ new one. Heavy traffic or other issues may also prevent data from being sent. In
 case, the transmission is delayed (without breaking the connection).Thanks to these 
 controls, successful data delivery is guaranteed with TCP.
 
+client flow 
+  [1. socket()]  --> Creates the endpoint
+        │
+  [2. bind()]    --> Forces client to a specific local IP/Port (Optional)
+        │
+  [3. connect()] --> Initiates TCP 3-way handshake with Server
+        │
+  [4. send/recv] --> Data exchange loop
+        │
+  [5. close()]   --> Tears down the connection
+
+server flow
+
+  [1. socket()]  --> Creates an endpoint for communication
+        │
+  [2. bind()]    --> Assigns a specific IP and Port to the socket
+        │
+  [3. listen()]  --> Puts the socket into passive mode to wait for clients
+        │
+  [4. accept()]  --> Blocks execution until a client connects. 
+        │            Returns a *new* socket descriptor for that specific client.
+        │
+  [5. send/recv] --> Data exchange loop with the client (via the new socket)
+        │
+  [6. close()]   --> Closes client socket (ends session) & listening socket(shuts down server)
+
 TCP is best for:
 1.Email or texting
 2.File transfers
