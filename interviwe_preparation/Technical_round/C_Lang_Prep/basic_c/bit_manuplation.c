@@ -40,6 +40,18 @@ bool check_bit_is_set_or_no(unsigned int a, int pos)
     return result;
 }
 
+
+/*
+important table xor gate 
+ 1  ^ 1 -------> 0 (same)
+ 0  ^ 1 -------> 1 (diff)
+ 1  ^ 0 -------> 0 (diff)
+ 1  ^ 1 -------> 1 (same)
+
+ a^b = combo
+ combo ^ a  = b
+ combo ^ b   = a
+*/
 unsigned char swap_bit(unsigned char a ,int pos1,int pos2)
 {
 // Extract the bits at pos1 and pos2
