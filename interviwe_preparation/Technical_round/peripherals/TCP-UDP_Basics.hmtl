@@ -167,7 +167,88 @@ Disadvantages of UDP
                   file transfers (HTTP,     VoIP (DNS, DHCP)
                   SMTP, FTP)	  
  */
+tcp server sample code 
 
+
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#define PORT 8080
+
+int main() {
+    int server_fd, client_fd;
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+    char *message = "Hello from Server!\n";
+
+    // 1. SOCKET
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+    // Set up server address structure
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY; // Listen on any available network card
+    address.sin_port = htons(PORT);       // Host-to-Network Short conversion
+
+    // 2. BIND
+    bind(server_fd, (struct sockaddr *)&address, sizeof(address));
+
+    // 3. LISTEN
+    listen(server_fd, 3);
+    printf("Server is waiting on port %d...\n", PORT);
+
+    // 4. ACCEPT (Blocks until client connects)
+    client_fd = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+    printf("Client successfully connected!\n");
+
+    // 5. SEND DATA
+    send(client_fd, message, strlen(message), 0);
+
+    // 6. CLOSE
+    close(client_fd);
+    close(server_fd);
+
+    return 0;
+}
+
+tcp client sample code 
+
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#define PORT 8080
+
+int main() {
+    int client_fd;
+    struct sockaddr_in serv_addr;
+    char buffer[1024] = {0};
+
+    // 1. SOCKET
+    client_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+    // Set up target server address structure
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+    
+    // Convert text IP "127.0.0.1" to binary network format
+    inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
+
+    // 2. CONNECT
+    connect(client_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+    printf("Connected to the server!\n");
+
+    // 3. RECEIVE DATA
+    read(client_fd, buffer, 1024);
+    printf("Message from server: %s", buffer);
+
+    // 4. CLOSE
+    close(client_fd);
+
+    return 0;
+}
 
 
  */
